@@ -31,10 +31,20 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
                   },
                   crossOriginEmbedderPolicy: false,
                   crossOriginOpenerPolicy: false,
-                  crossOriginResourcePolicy: { policy: "cross-origin" }
+                  crossOriginResourcePolicy: { policy: "cross-origin" },
+                  hsts: false,
+                  upgradeInsecureRequests: false
                 }));
 app.use(cors());
 app.use(express.json());
+
+// Add headers to prevent HTTPS upgrade
+app.use((req, res, next) => {
+  res.setHeader('Strict-Transport-Security', 'max-age=0');
+  res.setHeader('Upgrade-Insecure-Requests', '0');
+  next();
+});
+
 app.use(express.static('public'));
 
 // Rate limiting
