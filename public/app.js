@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Authentication functions
 async function login(username, password) {
     try {
+        console.log('מנסה להתחבר ל:', API_BASE_URL + '/api/login');
         const response = await fetch(API_BASE_URL + '/api/login', {
             method: 'POST',
             headers: {
@@ -29,7 +30,9 @@ async function login(username, password) {
             body: JSON.stringify({ username, password })
         });
 
+        console.log('תגובת שרת:', response.status, response.statusText);
         const data = await response.json();
+        console.log('נתוני תגובה:', data);
 
         if (response.ok) {
             authToken = data.token;
@@ -46,6 +49,7 @@ async function login(username, password) {
             return { success: false, error: data.error };
         }
     } catch (error) {
+        console.error('שגיאה בהתחברות:', error);
         return { success: false, error: 'שגיאה בחיבור לשרת' };
     }
 }
@@ -279,14 +283,19 @@ function formatDate(dateString) {
 // Event listeners
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    console.log('טופס התחברות נשלח');
     
     const button = this.querySelector('button[type="submit"]');
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
+    console.log('שם משתמש:', username);
+    console.log('API_BASE_URL:', API_BASE_URL);
+    
     showLoading(button, true);
     
     const result = await login(username, password);
+    console.log('תוצאת התחברות:', result);
     
     if (result.success) {
         showAlert('loginAlert', 'התחברת בהצלחה!', 'success');
