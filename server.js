@@ -10,31 +10,10 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Middleware
-                app.use(helmet({
-                  contentSecurityPolicy: {
-                    directives: {
-                      defaultSrc: ["'self'"],
-                      styleSrc: ["'self'", "'unsafe-inline'", "http://cdn.jsdelivr.net", "http://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
-                      scriptSrc: ["'self'", "'unsafe-inline'", "http://cdn.jsdelivr.net", "http://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
-                      fontSrc: ["'self'", "http://cdn.jsdelivr.net", "http://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com"],
-                      imgSrc: ["'self'", "data:", "http:", "https:"],
-                      connectSrc: ["'self'"],
-                      frameSrc: ["'self'"],
-                      objectSrc: ["'none'"],
-                      mediaSrc: ["'self'"],
-                      formAction: ["'self'", "http:", "https:"]
-                    }
-                  },
-                  crossOriginEmbedderPolicy: false,
-                  crossOriginOpenerPolicy: false,
-                  crossOriginResourcePolicy: { policy: "cross-origin" },
-                  hsts: false,
-                  upgradeInsecureRequests: false
-                }));
 app.use(cors());
 app.use(express.json());
 
@@ -42,6 +21,9 @@ app.use(express.json());
 app.use((req, res, next) => {
   res.setHeader('Strict-Transport-Security', 'max-age=0');
   res.setHeader('Upgrade-Insecure-Requests', '0');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
   next();
 });
 
