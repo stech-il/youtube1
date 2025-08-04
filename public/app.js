@@ -1,6 +1,7 @@
 // Global variables
 let currentUser = null;
 let authToken = null;
+const API_BASE_URL = window.location.protocol + '//' + window.location.host;
 
 // Check if user is already logged in
 document.addEventListener('DOMContentLoaded', function() {
@@ -20,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Authentication functions
 async function login(username, password) {
     try {
-        const response = await fetch('/api/login', {
+        const response = await fetch(API_BASE_URL + '/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -51,7 +52,7 @@ async function login(username, password) {
 
 async function register(username, password) {
     try {
-        const response = await fetch('/api/register', {
+        const response = await fetch(API_BASE_URL + '/api/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -131,10 +132,10 @@ function showAlert(elementId, message, type = 'danger') {
 // Video management functions
 async function loadVideos() {
     try {
-        const response = await fetch('/api/videos', {
-            headers: {
-                'Authorization': `Bearer ${authToken}`
-            }
+                const response = await fetch(API_BASE_URL + '/api/videos', {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
         });
 
         if (response.ok) {
@@ -215,14 +216,14 @@ function displayVideos(videos) {
 
 async function addVideo(youtubeUrl) {
     try {
-        const response = await fetch('/api/videos', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${authToken}`
-            },
-            body: JSON.stringify({ youtube_url: youtubeUrl })
-        });
+            const response = await fetch(API_BASE_URL + '/api/videos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ youtube_url: youtubeUrl })
+    });
 
         const data = await response.json();
 
@@ -245,12 +246,12 @@ async function deleteVideo(videoId) {
     }
 
     try {
-        const response = await fetch(`/api/videos/${videoId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${authToken}`
-            }
-        });
+            const response = await fetch(API_BASE_URL + `/api/videos/${videoId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
 
         if (response.ok) {
             showAlert('deleteVideoAlert', 'סרטון נמחק בהצלחה!', 'success');
@@ -341,7 +342,7 @@ document.getElementById('addVideoForm').addEventListener('submit', async functio
 // Load system status
 async function loadSystemStatus() {
   try {
-    const response = await fetch('/api/status', {
+    const response = await fetch(API_BASE_URL + '/api/status', {
       headers: {
         'Authorization': `Bearer ${authToken}`
       }
@@ -393,7 +394,7 @@ function showDashboard() {
 // Show statistics
 async function showStatistics() {
   try {
-    const response = await fetch('/api/statistics', {
+    const response = await fetch(API_BASE_URL + '/api/statistics', {
       headers: {
         'Authorization': `Bearer ${authToken}`
       }
@@ -422,7 +423,7 @@ async function updateTitles() {
     button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>מעדכן...';
     button.disabled = true;
 
-    const response = await fetch('/api/update-titles', {
+    const response = await fetch(API_BASE_URL + '/api/update-titles', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${authToken}`
