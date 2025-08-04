@@ -2,7 +2,7 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -335,24 +335,15 @@ app.post('/api/update-titles', authenticateToken, async (req, res) => {
 // Function to extract video title from YouTube
 async function extractVideoTitle(youtubeUrl) {
   try {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--disable-gpu'
-      ]
+    const browser = await chromium.launch({
+      headless: true
     });
 
     const page = await browser.newPage();
-    await page.setViewport({ width: 1280, height: 720 });
+    await page.setViewportSize({ width: 1280, height: 720 });
     
     // Navigate to YouTube
-    await page.goto(youtubeUrl, { waitUntil: 'networkidle2' });
+    await page.goto(youtubeUrl, { waitUntil: 'networkidle' });
     
     // Accept cookies if dialog appears
     try {
@@ -392,26 +383,17 @@ async function startVirtualPlayer(videoId, youtubeUrl) {
   try {
     console.log(`מתחיל נגן וירטואלי עבור סרטון ${videoId}`);
     
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--disable-gpu'
-      ]
+    const browser = await chromium.launch({
+      headless: true
     });
 
     const page = await browser.newPage();
     
     // Set viewport
-    await page.setViewport({ width: 1280, height: 720 });
+    await page.setViewportSize({ width: 1280, height: 720 });
     
     // Navigate to YouTube
-    await page.goto(youtubeUrl, { waitUntil: 'networkidle2' });
+    await page.goto(youtubeUrl, { waitUntil: 'networkidle' });
     
     // Accept cookies if dialog appears
     try {
@@ -524,7 +506,7 @@ async function monitorVideoCompletion(videoId, page) {
     
     // Refresh page to restart video
     console.log(`[${new Date().toLocaleString()}] מרענן דף עבור סרטון ${videoId}...`);
-    await page.reload({ waitUntil: 'networkidle2' });
+    await page.reload({ waitUntil: 'networkidle' });
     
     // Accept cookies again if needed
     try {
